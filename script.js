@@ -8,13 +8,13 @@ var ArrayObject = function (inputData) {
 			ASC: "asc",
 			DESC: "desc"
 		},
-		DELIMITER = "-|-";
+		DELIMITER = "\|-|-|/";
 
 	self.ids = [];
 	self.orderBy = null;
 	self.orderWay = null;
 	self.itemsCount = 0;
-	self.data = inputData;
+	self.data = {};
 	self.keys = [];
 
 	self.fill = function (data) {
@@ -29,11 +29,11 @@ var ArrayObject = function (inputData) {
 					self.addItem(id, itemData);
 				}
 			});
+
+			self.createKeysArray(self.getItem(self.ids[0]));
+
+			self.orderAsc();
 		}
-
-		self.createKeysArray(self.getItem(self.ids[0]));
-
-		self.orderAsc();
 	};
 
 	self.keyExists = function (key) {
@@ -61,7 +61,7 @@ var ArrayObject = function (inputData) {
 
 	self.orderByKey = function (key, orderWay) {
 		var tempAray = [],
-			orderWay = self.orderWay === order.ASC ? order.ASC : order.DESC;
+			orderWay = orderWay === order.DESC ? order.DESC : order.ASC;
 
 		$.each(self.data, function (k, v) {
 			tempAray.push([v[key], k].join(DELIMITER));
@@ -84,7 +84,7 @@ var ArrayObject = function (inputData) {
 	};
 
 	self.refreshOrder = function () {
-		var orderBy = self.orderBy ? self.orderBy : keys.ID,
+		var orderBy = $.inArray(self.orderBy, self.keys) !== -1 ? self.orderBy : keys.ID,
 			orderWay = self.orderWay === order.ASC ? order.ASC : order.DESC;
 
 		if(orderBy === keys.ID) {
@@ -94,7 +94,7 @@ var ArrayObject = function (inputData) {
 				self.ids.sort(function(a, b){return b-a});
 			}
 		} else {
-
+			self.orderByKey(self.orderBy, self.orderWay);
 		}
 	};
 

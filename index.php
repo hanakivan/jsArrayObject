@@ -49,9 +49,20 @@ console.log(item);
 
 obj.orderAsc();
 
-var item = obj.orderByKey("name");
+obj.orderByKey("name");
+var item = obj.getAllIds();
+console.log(item);
 
-console.log();
+obj.orderByKey("age");
+var item = obj.getAllIds();
+console.log(item);
+
+obj.orderBy = "name";
+obj.orderWay = "desc";
+
+obj.refreshOrder();
+var item = obj.getAllIds();
+console.log(item);
 
 </script>
 
