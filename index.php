@@ -64,6 +64,27 @@ obj.refreshOrder();
 var item = obj.getAllIds();
 console.log(item);
 
+obj.createLoop();
+
+while(obj.isLooped()) {
+	var item = obj.getLoopedItem();
+	console.log(item, obj.ids, obj.loop);
+}
+
+obj.resetLoop();
+
+obj.orderByKey("age", "asc");
+
+obj.createLoop();
+
+while(obj.isLooped()) {
+	var item = obj.getLoopedItem();
+	console.log(item, obj.ids, obj.loop);
+}
+
+obj.resetLoop();
+
+ 
 </script>
 
 

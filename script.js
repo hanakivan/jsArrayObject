@@ -1,3 +1,9 @@
+function arrayRemove(item, array) {
+    return jQuery.grep(array, function(value) {
+        return value != item;
+    });
+}
+
 var ArrayObject = function (inputData) {
 
 	var self = this,
@@ -16,6 +22,7 @@ var ArrayObject = function (inputData) {
 	self.itemsCount = 0;
 	self.data = {};
 	self.keys = [];
+	self.loop = [];
 
 	self.fill = function (data) {
 		self.clear();
@@ -63,7 +70,7 @@ var ArrayObject = function (inputData) {
 		var tempAray = [],
 			orderWay = orderWay === order.DESC ? order.DESC : order.ASC;
 
-		$.each(self.data, function (k, v) {
+		$.each(self.getData(), function (k, v) {
 			tempAray.push([v[key], k].join(DELIMITER));
 		});
 
@@ -108,7 +115,10 @@ var ArrayObject = function (inputData) {
 
 
 	self.init = function () {
-		self.fill(inputData);
+
+		if(inputData) {
+			self.fill(inputData);
+		}
 	};
 
 	self.clear = function () {
@@ -118,6 +128,7 @@ var ArrayObject = function (inputData) {
 		self.itemsCount = 0;
 		self.data = {};
 		self.keys = [];
+		self.resetLoop();
 	};
 
 	self.count = function () {
@@ -136,14 +147,17 @@ var ArrayObject = function (inputData) {
 		if(self.isEmpty()) {
 			return false;
 		}
-		return self.ids.indexOf(item_id) !== -1;
+		return $.inArray(item_id, self.ids) !== -1;
 	}
 
 	self.getItem = function (item_id) {
-		return self.getItemBy(keys.ID, item_id);
+		return self.getItemWhere(keys.ID, item_id);
 	}
 
-	self.addItem = function (item_id, item_data) {
+	self.addItem = function (item_id, item_data, refresh_order) {
+
+		refresh_order = refresh_order === true;
+
 		if(self.itemExists(item_id)) {
 			return true;
 		}
@@ -152,10 +166,14 @@ var ArrayObject = function (inputData) {
 
 		self.refreshCount();
 
+		if(refresh_order) {
+			self.refreshOrder();
+		}
+
 		return true;
 	};
 
-	self.getItemBy = function (key, value) {
+	self.getItemWhere = function (key, value) {
 
 		if(self.isEmpty()) {
 			return null;
@@ -178,7 +196,30 @@ var ArrayObject = function (inputData) {
 			}
 		});
 		return item_to_return;
-	}
+	};
+
+	self.createLoop = function () {
+		self.loop = self.ids.slice(); // a new array has to eb created with slice
+	};
+
+	self.resetLoop = function () {
+		self.loop = [];
+	};
+
+	self.isLooped = function () {
+		return self.loop.length > 0;
+	};
+
+	self.getLoopedItem = function () {
+		if(!self.isLooped()) {
+			return null;
+		}
+
+		var id = self.loop.shift();
+
+		return self.getItem(id);
+	};
+
 
 	self.init();
 
